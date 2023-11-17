@@ -10,6 +10,24 @@ const server = http.createServer(app);
 
 app.use(cors());
 
+let connectedUsers = [];
+let rooms = [];
+
+app.get("/api/room-exists/:roomId", (req, res) => {
+    const { roomId } = req.params;
+    const room = rooms.find((room) => room.id === roomId);
+
+    if (room) {
+        if (room.connectedUsers.length > 3) {
+            res.send({ existRoom: true, fullUsers: true }).status(200);
+        } else {
+            res.send({ existRoom: true, fullUsers: false }).status(200);
+        }
+    } else {
+        res.send({ existRoom: false }).status(404);
+    }
+});
+
 const io = require("socket.io")(server, {
     cors: {
         origin: "*",
